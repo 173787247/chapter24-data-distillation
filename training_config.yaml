@@ -1,0 +1,50 @@
+﻿# 第二十四章数据蒸馏作业训练配置
+# 基于Unsloth的QLoRA微调配置
+
+model:
+  name: "deepseek-ai/deepseek-coder-1.3b-instruct"
+  max_seq_length: 2048
+  load_in_4bit: true
+  dtype: null
+
+qlora:
+  r: 16
+  lora_alpha: 16
+  lora_dropout: 0
+  bias: "none"
+  target_modules:
+    - "q_proj"
+    - "k_proj"
+    - "v_proj"
+    - "o_proj"
+    - "gate_proj"
+    - "up_proj"
+    - "down_proj"
+
+training:
+  num_train_epochs: 3
+  per_device_train_batch_size: 2
+  per_device_eval_batch_size: 2
+  gradient_accumulation_steps: 4
+  learning_rate: 2e-4
+  warmup_steps: 100
+  logging_steps: 10
+  save_steps: 500
+  eval_steps: 500
+  save_total_limit: 3
+  load_best_model_at_end: true
+  metric_for_best_model: "eval_loss"
+  greater_is_better: false
+
+data:
+  dataset_name: "FreedomIntelligence/medical-o1-reasoning-SFT"
+  max_samples: 1000
+  train_split: 0.8
+  validation_split: 0.2
+
+output:
+  output_dir: "./models/distilled_model"
+  logging_dir: "./results/training_logs"
+  save_strategy: "steps"
+  evaluation_strategy: "steps"
+  save_total_limit: 3
